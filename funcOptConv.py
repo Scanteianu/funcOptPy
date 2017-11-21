@@ -46,7 +46,7 @@ def decomposeCall(line):
         posarg=posarg[:-1]
     if(namearg!=""):
         namearg=namearg[:-1]
-    nuLine="["+name+","+"["+posarg+"],{"+namearg+"}]"
+    nuLine=name+","+"["+posarg+"],{"+namearg+"}"
     return nuLine
 #print(decomposeCall(" doAThing(arg1, 2+7, foobar=3)"))
 file=open(sys.argv[1],"r")
@@ -55,7 +55,12 @@ inparallel=False
 whitespace=""
 parallelCall="=parallelize(["
 nameArgFlag=re.compile(r"^[^\d\W]\w*=.*")
+outFile.write("import functionaloptimizer as sbopt\n")
 for line in file:
+    if(line.startswith("@dynamic")):
+        line=line.replace("@dynamic","@sbopt.dynamic")
+    if(line.startswith("@tailCall")):
+        line=line.replace("@tailCall","@sbopt.tailCall")
     if(line.strip().startswith("parallel:")):
         whitespace=line[:line.index("parallel:")]
         if('\t' in whitespace):
@@ -69,7 +74,7 @@ for line in file:
             inparallel=False
             outFile.write(parallelCall[:-1]+"],"+str(numthreads)+")\n")
             line=""
-            parallelCall="=parallelize(["
+            parallelCall="=sbopt.parallelize(["
         else:
             if(nameArgFlag.match(line.strip())):
                 
@@ -81,7 +86,7 @@ for line in file:
     if(line.strip().startswith("tailreturn ")):
         whitespace=line[:line.index("tailreturn ")]
         call = line[line.index("tailreturn ")+len("tailreturn "):]
-        line=whitespace+"return [[\"tail\",tail],"+decomposeCall(call)+"]"
+        line=whitespace+"return [[\"tail\",tail],"+decomposeCall(call)+"]\n"
     if(not inparallel):
         outFile.write(line)
 outFile.close()

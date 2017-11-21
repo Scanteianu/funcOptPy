@@ -95,6 +95,7 @@ def parallelize(myfunclist, numThreads):
 #then, for tail call, return list [["tail",tail], func, args, kwargs]
 #must have kwarg tail=False in header.
 #for normal return, proceed as standard.
+'''
 @tailCall
 def tailPrint(i, tail=False):
     if(i==0):
@@ -108,6 +109,7 @@ def noTailPrint(i, tail=False):
     if(i%1000==0):
         print i
     return noTailPrint(i-1)
+
 @tailCall
 def factorial(n, mult, tail=False):
     if(n==1):
@@ -136,3 +138,4 @@ print(time.time()-startTime)
 #print(tailPrint(20000))
 #print(factorial(50,1))
 #print(noTailPrint(20000))
+'''
