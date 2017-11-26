@@ -53,7 +53,8 @@ file=open(sys.argv[1],"r")
 outFile=open(sys.argv[2],"w")
 inparallel=False
 whitespace=""
-parallelCall="=parallelize(["
+oldWhitespace=""
+parallelCall="=sbopt.parallelize(["
 nameArgFlag=re.compile(r"^[^\d\W]\w*=.*")
 outFile.write("import functionaloptimizer as sbopt\n")
 for line in file:
@@ -63,6 +64,7 @@ for line in file:
         line=line.replace("@tailCall","@sbopt.tailCall")
     if(line.strip().startswith("parallel:")):
         whitespace=line[:line.index("parallel:")]
+        oldWhitespace=whitespace
         if('\t' in whitespace):
             whitespace+="\t"
         else:
@@ -72,7 +74,7 @@ for line in file:
     if(inparallel):
         if(not (line.startswith(whitespace) or line.strip().startswith("#"))):
             inparallel=False
-            outFile.write(parallelCall[:-1]+"],"+str(numthreads)+")\n")
+            outFile.write(oldWhitespace+parallelCall[:-1].strip()+"],"+str(numthreads)+")\n")
             line=""
             parallelCall="=sbopt.parallelize(["
         else:
